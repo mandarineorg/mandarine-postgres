@@ -26,16 +26,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { BufReader, BufWriter, Hash } from "./deps.ts";
-import { PacketWriter } from "./packet_writer.ts";
-import { hashMd5Password, readUInt32BE } from "./utils.ts";
-import { PacketReader } from "./packet_reader.ts";
-import { QueryConfig, QueryResult, Query } from "./query.ts";
-import { parseError } from "./error.ts";
 import { ConnectionParams } from "./connection_params.ts";
 import { DeferredStack } from "./deferred.ts";
-
-export enum Format {
+import { BufReader, BufWriter } from "./deps.ts";
+import { parseError } from "./error.ts";
+import { PacketReader } from "./packet_reader.ts";
+import { PacketWriter } from "./packet_writer.ts";
+import { Query, QueryConfig, QueryResult } from "./query.ts";
+import { hashMd5Password, readUInt32BE } from "./utils.ts";
+t enum Format {
   TEXT = 0,
   BINARY = 1,
 }
@@ -299,7 +298,7 @@ export class Connection {
       // notice response
       case "N":
         // TODO:
-        console.log("TODO: handle notice");
+        // console.log("TODO: handle notice");
         break;
       // command complete
       // TODO: this is duplicated in next loop
