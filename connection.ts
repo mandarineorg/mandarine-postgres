@@ -34,7 +34,7 @@ import { PacketReader } from "./packet_reader.ts";
 import { PacketWriter } from "./packet_writer.ts";
 import { Query, QueryConfig, QueryResult } from "./query.ts";
 import { hashMd5Password, readUInt32BE } from "./utils.ts";
-t enum Format {
+export enum Format {
   TEXT = 0,
   BINARY = 1,
 }
