@@ -3,7 +3,7 @@ export {
   BufWriter,
 } from "https://deno.land/std@0.61.0/io/bufio.ts";
 
-export { copyBytes } from "https://deno.land/std@0.61.0/io/util.ts";
+export { copyBytes } from "https://deno.land/std@0.61.0/bytes/mod.ts";
 
 export {
   Deferred,
