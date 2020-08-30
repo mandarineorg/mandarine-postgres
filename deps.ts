@@ -1,10 +1,10 @@
 export {
   Deferred,
   deferred
-} from "https://deno.land/std@0.64.0/async/deferred.ts";
-export { copyBytes } from "https://deno.land/std@0.64.0/bytes/mod.ts";
+} from "https://deno.land/std@0.67.0/async/deferred.ts";
+export { copyBytes } from "https://deno.land/std@0.67.0/bytes/mod.ts";
 export {
   BufReader,
   BufWriter
-} from "https://deno.land/std@0.64.0/io/bufio.ts";
+} from "https://deno.land/std@0.67.0/io/bufio.ts";
 export { Hash } from "https://deno.land/x/checksum@1.2.0/mod.ts";
