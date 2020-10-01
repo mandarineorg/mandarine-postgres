@@ -1,6 +1,6 @@
 const { test } = Deno;
 import { Client, PostgresError } from "../mod.ts";
-import { assert } from "../test_deps.ts";
+import { assert, assertStringContains } from "../test_deps.ts";
 import { TEST_CONNECTION_PARAMS } from "./constants.ts";
 
 test("badAuthData", async function () {
@@ -15,7 +15,7 @@ test("badAuthData", async function () {
   } catch (e) {
     thrown = true;
     assert(e instanceof PostgresError);
-    if(!e.message.includes("password authentication failed for user")) throw new Error("Error message must contain `password authentication failed for user`");
+    assertStringContains(e.message, "password authentication failed for user");
   } finally {
     await client.end();
   }

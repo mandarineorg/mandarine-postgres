@@ -26,14 +26,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { ConnectionParams } from "./connection_params.ts";
-import { DeferredStack } from "./deferred.ts";
 import { BufReader, BufWriter } from "./deps.ts";
-import { parseError } from "./error.ts";
-import { PacketReader } from "./packet_reader.ts";
 import { PacketWriter } from "./packet_writer.ts";
-import { Query, QueryConfig, QueryResult } from "./query.ts";
 import { hashMd5Password, readUInt32BE } from "./utils.ts";
+import { PacketReader } from "./packet_reader.ts";
+import { QueryConfig, QueryResult, Query } from "./query.ts";
+import { parseError } from "./error.ts";
+import type { ConnectionParams } from "./connection_params.ts";
+import { DeferredStack } from "./deferred.ts";
+
 export enum Format {
   TEXT = 0,
   BINARY = 1,
@@ -185,12 +186,13 @@ export class Connection {
         await this._authCleartext();
         await this._readAuthResponse();
         break;
-      case 5:
+      case 5: {
         // md5 password
         const salt = msg.reader.readBytes(4);
         await this._authMd5(salt);
         await this._readAuthResponse();
         break;
+      }
       default:
         throw new Error(`Unknown auth message code ${code}`);
     }
@@ -298,15 +300,15 @@ export class Connection {
       // notice response
       case "N":
         // TODO:
-        // console.log("TODO: handle notice");
         break;
       // command complete
       // TODO: this is duplicated in next loop
-      case "C":
+      case "C": {
         const commandTag = this._readCommandTag(msg);
         result.handleCommandComplete(commandTag);
         result.done();
         break;
+      }
       default:
         throw new Error(`Unexpected frame: ${msg.type}`);
     }
@@ -315,17 +317,19 @@ export class Connection {
       msg = await this.readMessage();
       switch (msg.type) {
         // data row
-        case "D":
+        case "D": {
           // this is actually packet read
           const foo = this._readDataRow(msg);
           result.handleDataRow(foo);
           break;
+        }
         // command complete
-        case "C":
+        case "C": {
           const commandTag = this._readCommandTag(msg);
           result.handleCommandComplete(commandTag);
           result.done();
           break;
+        }
         // ready for query
         case "Z":
           this._processReadyForQuery(msg);
@@ -486,10 +490,11 @@ export class Connection {
 
     switch (msg.type) {
       // row description
-      case "T":
+      case "T": {
         const rowDescription = this._processRowDescription(msg);
         result.handleRowDescription(rowDescription);
         break;
+      }
       // no data
       case "n":
         break;
@@ -506,17 +511,19 @@ export class Connection {
       msg = await this.readMessage();
       switch (msg.type) {
         // data row
-        case "D":
+        case "D": {
           // this is actually packet read
           const rawDataRow = this._readDataRow(msg);
           result.handleDataRow(rawDataRow);
           break;
+        }
         // command complete
-        case "C":
+        case "C": {
           const commandTag = this._readCommandTag(msg);
           result.handleCommandComplete(commandTag);
           result.done();
           break outerLoop;
+        }
         // error response
         case "E":
           await this._processError(msg);
@@ -566,6 +573,7 @@ export class Connection {
     return new RowDescription(columnCount, columns);
   }
 
+  // deno-lint-ignore no-explicit-any
   _readDataRow(msg: Message): any[] {
     const fieldCount = msg.reader.readInt16();
     const row = [];
@@ -600,9 +608,5 @@ export class Connection {
     await this.bufWriter.write(terminationMessage);
     await this.bufWriter.flush();
     this.conn.close();
-    delete this.conn;
-    delete this.bufReader;
-    delete this.bufWriter;
-    delete this.packetWriter;
   }
 }

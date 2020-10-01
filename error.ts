@@ -1,4 +1,4 @@
-import { Message } from "./connection.ts";
+import type { Message } from "./connection.ts";
 
 export interface ErrorFields {
   severity: string;
@@ -32,6 +32,7 @@ export class PostgresError extends Error {
 
 export function parseError(msg: Message): PostgresError {
   // https://www.postgresql.org/docs/current/protocol-error-fields.html
+  // deno-lint-ignore no-explicit-any
   const errorFields: any = {};
 
   let byte: number;
