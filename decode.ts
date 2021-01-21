@@ -139,8 +139,8 @@ function decodeBytea(byteaStr: string): Uint8Array {
 }
 
 function decodeByteaHex(byteaStr: string): Uint8Array {
-  let bytesStr = byteaStr.slice(2);
-  let bytes = new Uint8Array(bytesStr.length / 2);
+  const bytesStr = byteaStr.slice(2);
+  const bytes = new Uint8Array(bytesStr.length / 2);
   for (let i = 0, j = 0; i < bytesStr.length; i += 2, j++) {
     bytes[j] = parseInt(bytesStr[i] + bytesStr[i + 1], HEX);
   }
@@ -148,7 +148,7 @@ function decodeByteaHex(byteaStr: string): Uint8Array {
 }
 
 function decodeByteaEscape(byteaStr: string): Uint8Array {
-  let bytes = [];
+  const bytes = [];
   let i = 0;
   let k = 0;
   while (i < byteaStr.length) {
@@ -193,6 +193,10 @@ function decodeBaseTenInt(value: string): number {
 function decodeIntArray(value: string): any {
   if (!value) return null;
   return parseArray(value, decodeBaseTenInt);
+}
+
+function decodeJsonArray(value: string): unknown[] {
+  return parseArray(value, JSON.parse);
 }
 
 // deno-lint-ignore no-explicit-any
@@ -253,6 +257,9 @@ function decodeText(value: Uint8Array, typeOid: number): any {
     case Oid.json:
     case Oid.jsonb:
       return JSON.parse(strValue);
+    case Oid.json_array:
+    case Oid.jsonb_array:
+      return decodeJsonArray(strValue);
     case Oid.bytea:
       return decodeBytea(strValue);
     default:

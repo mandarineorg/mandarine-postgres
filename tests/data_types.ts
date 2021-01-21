@@ -267,3 +267,37 @@ testClient(async function bpcharNestedArray() {
   );
   assertEquals(result.rows[0], [[["AB1234"], ["4321BA"]]]);
 });
+
+testClient(async function jsonArray() {
+  const jsonArray = await CLIENT.query(
+    `SELECT ARRAY_AGG(A) FROM  (
+      SELECT JSON_BUILD_OBJECT( 'X', '1' ) AS A
+      UNION ALL
+      SELECT JSON_BUILD_OBJECT( 'Y', '2' ) AS A
+    )	A`,
+  );
+
+  assertEquals(jsonArray.rows[0][0], [{ X: "1" }, { Y: "2" }]);
+
+  const jsonArrayNested = await CLIENT.query(
+    `SELECT ARRAY[ARRAY[ARRAY_AGG(A), ARRAY_AGG(A)], ARRAY[ARRAY_AGG(A), ARRAY_AGG(A)]] FROM  (
+      SELECT JSON_BUILD_OBJECT( 'X', '1' ) AS A
+      UNION ALL
+      SELECT JSON_BUILD_OBJECT( 'Y', '2' ) AS A
+    )	A`,
+  );
+
+  assertEquals(
+    jsonArrayNested.rows[0][0],
+    [
+      [
+        [{ X: "1" }, { Y: "2" }],
+        [{ X: "1" }, { Y: "2" }],
+      ],
+      [
+        [{ X: "1" }, { Y: "2" }],
+        [{ X: "1" }, { Y: "2" }],
+      ],
+    ],
+  );
+});
